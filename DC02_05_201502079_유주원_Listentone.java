@@ -62,7 +62,6 @@ public class Listentone {
         EncoderDecoder encoderDecoder = new EncoderDecoder();
 
         while(true){
-            Thread.sleep(45);
             mAudioRecord.read(buffer, 0, blocksize);
             double buffer_D [] = new double[blocksize];
 

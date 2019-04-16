@@ -52,7 +52,7 @@ public class Listentone {
     }
 
 
-    public void PreRequest(){
+    public void PreRequest() throws InterruptedException {
         //decode
         int blocksize = findPowerSize((int)Math.round(interval / 2 * mSampleRate));
         short[] buffer = new short[blocksize];
@@ -62,6 +62,7 @@ public class Listentone {
         EncoderDecoder encoderDecoder = new EncoderDecoder();
 
         while(true){
+            Thread.sleep(45);
             mAudioRecord.read(buffer, 0, blocksize);
             double buffer_D [] = new double[blocksize];
 
@@ -136,16 +137,13 @@ public class Listentone {
         //merge 4bits data to 1byte
         List<Byte> dec = new ArrayList<Byte>();
         for (int i = 0; i+1 < list.size()-1; ) {    //end_HZ 1 빼기
-            if(i < 4 && (list.get(i)==11 || list.get(i)==12) ){   //시작의 경우는 제외하도록 하였습니다.
-                i += 1;
-                continue;
-            }
-            if(list.get(i)<0){
-                i += 1;
-                continue;
-            }
             byte front = (byte)(list.get(i).byteValue()<<4);
-            dec.add(new Byte((byte)(list.get(i+1).byteValue() + front)));
+            byte t_byte = (byte)(list.get(i+1).byteValue() + front);
+            if(i < list.size()- 10 &&( t_byte < 20)){ //127은 음수에서 같이 걸러집니다.
+                i += 1;
+                continue;
+            }
+            dec.add(new Byte(t_byte));
             i += 2;
         }
         return dec;
